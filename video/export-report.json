@@ -1,0 +1,47 @@
+{
+  "exportDate": "2026-11-11",
+  "file": "yuantong-30s.mp4",
+  "composition": "Yuantong30",
+  "width": 1920,
+  "height": 1080,
+  "aspectRatio": "16:9",
+  "fps": 30,
+  "videoDurationSeconds": 30,
+  "containerDurationSeconds": 30.016,
+  "videoCodec": "h264",
+  "pixelFormat": "yuv420p",
+  "audioCodec": "aac",
+  "audioChannels": 2,
+  "targetVideoBitrate": 16000000,
+  "actualVideoBitrate": 14819596,
+  "sizeBytes": 56793587,
+  "sha256": "1b43f854beebddafc30ab54cc5a84efd5174e30c2d6f27e8f714877827fa5052",
+  "encoder": "h264_videotoolbox",
+  "hardwareAcceleration": "required",
+  "hardwareAccelerated": true,
+  "finalMuxVideoMode": "copy",
+  "renderLogEvidence": "[stitchFramesToVideo()] Encoder: h264_videotoolbox, hardware accelerated: true",
+  "guides": false,
+  "personalContactDetails": false,
+  "safeArea": {
+    "actionMargins": {
+      "left": 96,
+      "right": 96,
+      "top": 54,
+      "bottom": 54
+    },
+    "textMargins": {
+      "left": 192,
+      "right": 192,
+      "top": 108,
+      "bottom": 108
+    }
+  },
+  "validation": {
+    "typecheck": "passed",
+    "allFramesEncoded": 900,
+    "actualMetadata": "verified by ffprobe",
+    "finalVideoFrameInspection": "passed; 30 samples at 1fps",
+    "platformDeviceAcceptance": false
+  }
+}

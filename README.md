@@ -51,3 +51,10 @@ npm run build
 首页以 [Hi, I’m Noh 的公开展示](https://www.ludgi.ai/websites/hi-im-noh-3d-portfolio) 为构图参考，重新实现暗色大字背景、中央人物、浮动物体和联系按钮互动；使用张元通自己的文案与 AI 生成形象，没有使用参考站的付费源码或人物素材。参考站演示链接核对时失效，因此没有宣称逐帧复刻其完整交互。
 
 `site/src/InteractivePortrait.tsx` 为人物交互组件；`site/src/portrait-motion.ts` 为鼠标方向映射；`site/src/expressions/` 为六帧表情素材；生成说明见 `ARTWORK.md`。
+
+
+## 个人网站展示视频
+
+- [30秒1080p成片](video/yuantong-30s.mp4)
+- [可编辑Remotion工程与预览说明](video/yuantong-film/README.md)
+- [导出验证与SHA-256校验](video/export-report.json)

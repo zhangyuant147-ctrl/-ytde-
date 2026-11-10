@@ -1,0 +1,28 @@
+{
+  "name": "yuantong-portfolio-film",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts --no-open",
+    "typecheck": "tsc --noEmit",
+    "render": "remotion render src/index.ts Yuantong30 out/yuantong-30s.mp4 --codec=h264 --hardware-acceleration=required --video-bitrate=16M --pixel-format=yuv420p"
+  },
+  "dependencies": {
+    "@react-three/fiber": "9.8.2",
+    "@remotion/cli": "4.0.542",
+    "@remotion/media": "4.0.542",
+    "@remotion/three": "4.0.542",
+    "@remotion/transitions": "4.0.542",
+    "@types/three": "0.187.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "remotion": "4.0.542",
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3"
+  }
+}
