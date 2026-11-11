@@ -22,5 +22,11 @@ jobs:
           cache-dependency-path: apps/decision-lab/package-lock.json
       - run: npm ci
       - run: npm run check
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      - name: Test decision flows in Chrome
+        run: |
+          if command -v google-chrome >/dev/null; then
+            export CHROME_PATH="$(command -v google-chrome)"
+          else
+            npx playwright install --with-deps chromium
+          fi
+          npm run test:e2e
