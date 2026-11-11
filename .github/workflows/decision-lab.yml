@@ -1,0 +1,26 @@
+name: Decision Lab
+on:
+  push:
+    paths: ['apps/decision-lab/**', '.github/workflows/decision-lab.yml']
+  pull_request:
+    paths: ['apps/decision-lab/**', '.github/workflows/decision-lab.yml']
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: apps/decision-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/decision-lab/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
