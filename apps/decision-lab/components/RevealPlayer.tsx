@@ -12,6 +12,7 @@ export default function RevealPlayer({ rows }: { rows: Score[] }) {
       compositionWidth={760}
       compositionHeight={600}
       autoPlay
+      moveToBeginningWhenEnded={false}
       controls
       style={{ width: "100%", aspectRatio: "760/600" }}
     />
