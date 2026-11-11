@@ -1,5 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
+import { ideaCount, localIdeas, type IdeaRequest } from "./option-ideas";
+import { normalize, optionSchema } from "./model";
 import { demoQuestions } from "./demo";
 import { explain, nextSteps } from "./explain";
 import {
@@ -172,5 +174,35 @@ export async function summarize(
     };
   } catch {
     return local("AI 解释暂不可用，以下为相同得分的规则解释。");
+  }
+}
+
+export async function suggestOptions(
+  request: IdeaRequest,
+  chat = chatClient(),
+) {
+  if (!aiEnabled()) return localIdeas(request);
+  const count = ideaCount(request.existing);
+  try {
+    const names = await twice(async () => {
+      const raw = await chat(
+        "针对用户描述的难题，提出指定数量的可行候选行动，用简体中文短语。尊重问题提到的限制，不假设未给出的预算、地点等事实。建议之间应有实质差异，也要区别于已有选项。只返回 {names:[候选项名称]}。",
+        { ...request, count },
+      );
+      const { names } = z
+        .object({ names: z.array(optionSchema.shape.name).length(count) })
+        .parse(raw);
+      const combined = [...request.existing, ...names].map(normalize);
+      if (new Set(combined).size !== combined.length) throw Error("建议重复");
+      return names;
+    });
+    return {
+      names,
+      mode: "ai" as const,
+      note: "AI 已补充候选项，可以改名、删减，再开始决策。",
+    };
+  } catch {
+    const fallback = localIdeas(request);
+    return { ...fallback, note: "AI 暂时不可用。" + fallback.note };
   }
 }

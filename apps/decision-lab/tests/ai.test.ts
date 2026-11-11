@@ -85,3 +85,34 @@ test("verified AI session selects evidence; invalid plans cannot replace compute
   });
   assert.equal(calls, 0);
 });
+
+test("suggestions are distinct, preserve room for existing options and fall back on duplicates", async () => {
+  const { suggestOptions } = await import("../lib/server");
+  const request = {
+    prompt: "晚饭吃什么？",
+    existing: ["米饭", "汤面", "水饺"],
+  };
+  const ai = await suggestOptions(request, async () => ({
+    names: ["  炒粉  "],
+  }));
+  assert.deepEqual(ai.names, ["炒粉"]);
+  assert.equal(ai.mode, "ai");
+  let calls = 0;
+  const fallback = await suggestOptions(request, async () => {
+    calls++;
+    return { names: [" 米饭 "] };
+  });
+  assert.equal(fallback.mode, "demo");
+  assert.equal(calls, 2);
+  assert.equal(fallback.names.length, 1);
+  assert.ok(!request.existing.includes(fallback.names[0]));
+  delete process.env.AI_API_KEY;
+  const general = await suggestOptions(
+    { prompt: "该怎么安排？", existing: [] },
+    async () => {
+      throw Error("should stay local");
+    },
+  );
+  assert.equal(general.names.length, 3);
+  assert.match(general.note, /通用/);
+});

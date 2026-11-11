@@ -101,9 +101,9 @@ test("input validation, accessible guide, and reduced motion", async ({
   await page.getByRole("button", { name: "使用说明" }).press("Enter");
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
-  await start(page).click();
+  await page.getByRole("button", { name: "帮我想选项" }).click();
   await expect(page.locator("#prompt")).toBeFocused();
-  await expect(page.getByText("请填一下这里")).toHaveCount(3);
+  await expect(page.getByText("请填一下这里")).toHaveCount(1);
   await page.getByRole("button", { name: /晚饭吃什么/ }).click();
   await page.getByRole("textbox", { name: "选项 B" }).fill(" 汤面 ");
   await start(page).click();
@@ -118,4 +118,35 @@ test("input validation, accessible guide, and reduced motion", async ({
   }
   await expect(page.locator(".winners strong")).toHaveCount(3);
   await expect(page.locator(".film")).toHaveCount(0);
+});
+
+test("prompt-only start produces editable options before quiz; supplement keeps typed choices", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/");
+  await page.locator("#prompt").fill("晚饭吃什么？");
+  await page.getByRole("button", { name: "帮我想选项" }).press("Enter");
+  await expect(start(page)).toBeVisible();
+  await expect(page.locator(".idea-note")).toContainText("演示模式");
+  await expect(page.locator(".optionrow input")).toHaveCount(3);
+  await page.getByRole("textbox", { name: "选项 A" }).fill("自己包饺子");
+  await page.getByRole("button", { name: "删除选项 B" }).click();
+  await page.getByRole("button", { name: "帮我补充选项" }).click();
+  await expect(page.locator(".optionrow input")).toHaveCount(4);
+  await expect(page.getByRole("textbox", { name: "选项 A" })).toHaveValue(
+    "自己包饺子",
+  );
+  await fits(page);
+  await start(page).press("Enter");
+  for (let i = 0; i < 3; i++) {
+    await page.getByRole("button", { name: /自己包饺子/ }).click();
+    await page
+      .getByRole("button", {
+        name: i === 2 ? "揭晓结果" : "下一题",
+        exact: true,
+      })
+      .click();
+  }
+  await expect(page.locator(".winners")).toHaveText("自己包饺子");
 });

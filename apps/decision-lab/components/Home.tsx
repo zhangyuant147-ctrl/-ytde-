@@ -23,6 +23,7 @@ import {
 import { decisionSchema, type Decision, type Session } from "../lib/model";
 import { presets } from "../lib/demo";
 import Balance from "./Balance";
+import { ideaRequest, ideaResponse } from "../lib/option-ideas";
 
 const icons = [Compass, Utensils, BookOpen];
 const captions = ["周末出行", "今天吃点啥", "学习与生活"];
@@ -34,7 +35,11 @@ export default function Home({ onReady }: { onReady: (s: Session) => void }) {
   ]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [active, setActive] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<"ideas" | "questions" | null>(null);
+  const [ideaNote, setIdeaNote] = useState("");
+  const busy = pending !== null;
+  const filled = options.filter((o) => o.name.trim());
+  const needsIdeas = filled.length < 2;
   const lock = useRef(false);
   const reduce = useReducedMotion(),
     x = useMotionValue(0),
@@ -42,12 +47,56 @@ export default function Home({ onReady }: { onReady: (s: Session) => void }) {
   const sx = useSpring(x),
     sy = useSpring(y);
   function edit() {
+    setIdeaNote("");
     setErrors({});
     setActive("");
+  }
+  async function addIdeas() {
+    if (lock.current) return;
+    const parsed = ideaRequest.safeParse({
+      prompt,
+      existing: filled.map((o) => o.name),
+    });
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      const field = issue.path[0] === "prompt" ? "prompt" : "form";
+      setErrors({ [field]: issue.message });
+      if (field === "prompt") document.getElementById("prompt")?.focus();
+      return;
+    }
+    lock.current = true;
+    setPending("ideas");
+    setIdeaNote("");
+    setErrors({});
+    try {
+      const response = await fetch("/api/options", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+      if (!response.ok) throw Error();
+      const ideas = ideaResponse.parse(await response.json());
+      const names = [...ideas.names];
+      const updated = options.flatMap((o) => {
+        if (o.name.trim()) return [o];
+        const name = names.shift();
+        return name ? [{ ...o, name }] : [];
+      });
+      for (const name of names) updated.push({ id: crypto.randomUUID(), name });
+      setOptions(updated);
+      setActive("");
+      setIdeaNote(ideas.note);
+    } catch {
+      setErrors({ form: "暂时无法补充选项，请重试，或直接填写。" });
+    } finally {
+      lock.current = false;
+      setPending(null);
+    }
   }
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (lock.current) return;
+    if (needsIdeas) return addIdeas();
     const parsed = decisionSchema.safeParse({ prompt, options });
     if (!parsed.success) {
       const found = Object.fromEntries(
@@ -61,7 +110,7 @@ export default function Home({ onReady }: { onReady: (s: Session) => void }) {
       return;
     }
     lock.current = true;
-    setBusy(true);
+    setPending("questions");
     setErrors({});
     try {
       const response = await fetch("/api/questions", {
@@ -75,7 +124,7 @@ export default function Home({ onReady }: { onReady: (s: Session) => void }) {
       setErrors({ form: "暂时连不上服务，请再试一次。" });
     } finally {
       lock.current = false;
-      setBusy(false);
+      setPending(null);
     }
   }
   return (
@@ -170,8 +219,13 @@ export default function Home({ onReady }: { onReady: (s: Session) => void }) {
                 <span className="formlabel">
                   <span className="num lilac">02</span>有哪些选项？
                 </span>
-                <span className="count">{options.length} / 4</span>
+                <span className="count">{filled.length} / 4</span>
               </div>
+              {needsIdeas && (
+                <p className="option-hint">
+                  还没有想好？只写难题，也可以先获取候选项。
+                </p>
+              )}
               <div className="options">
                 {options.map((o, i) => {
                   const key = "options." + i + ".name";
@@ -233,21 +287,31 @@ export default function Home({ onReady }: { onReady: (s: Session) => void }) {
                   );
                 })}
               </div>
-              {options.length < 4 && (
-                <button
-                  type="button"
-                  className="add"
-                  onClick={() => {
-                    edit();
-                    setOptions([
-                      ...options,
-                      { id: crypto.randomUUID(), name: "" },
-                    ]);
-                  }}
-                >
-                  <CirclePlus size={16} /> 添加选项
-                </button>
-              )}
+              <div className="option-actions">
+                {options.length < 4 && (
+                  <button
+                    type="button"
+                    className="add"
+                    onClick={() => {
+                      edit();
+                      setOptions([
+                        ...options,
+                        { id: crypto.randomUUID(), name: "" },
+                      ]);
+                    }}
+                  >
+                    <CirclePlus size={16} /> 添加选项
+                  </button>
+                )}
+                {!needsIdeas && filled.length < 4 && (
+                  <button type="button" className="add" onClick={addIdeas}>
+                    <Sparkles size={16} /> 帮我补充选项
+                  </button>
+                )}
+              </div>
+              <p role="status" className="idea-note">
+                {ideaNote}
+              </p>
               {errors.form && (
                 <p role="alert" className="error">
                   {errors.form}
@@ -260,11 +324,21 @@ export default function Home({ onReady }: { onReady: (s: Session) => void }) {
               >
                 {busy ? (
                   <>
-                    <LoaderCircle className="spin" size={19} /> 正在生成问答…
+                    <LoaderCircle className="spin" size={19} />{" "}
+                    {pending === "ideas" ? "正在想选项…" : "正在生成问答…"}
                   </>
                 ) : (
                   <>
-                    开始决策 <ArrowRight size={22} />
+                    {needsIdeas
+                      ? filled.length
+                        ? "帮我补全选项"
+                        : "帮我想选项"
+                      : "开始决策"}{" "}
+                    {needsIdeas ? (
+                      <Sparkles size={20} />
+                    ) : (
+                      <ArrowRight size={22} />
+                    )}
                   </>
                 )}
               </motion.button>
@@ -292,6 +366,7 @@ export default function Home({ onReady }: { onReady: (s: Session) => void }) {
                   setPrompt(p.prompt);
                   setOptions(p.options.map((o) => ({ ...o })));
                   setActive(p.id);
+                  setIdeaNote("");
                   setErrors({});
                   document.getElementById("prompt")?.focus();
                 }}

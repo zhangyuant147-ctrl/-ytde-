@@ -865,3 +865,21 @@ dialog::backdrop {
     position: absolute;
   }
 }
+
+.option-hint,
+.idea-note:not(:empty) {
+  color: #514937;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.option-hint {
+  margin: -2px 0 9px;
+}
+.idea-note:not(:empty) {
+  margin-top: 10px;
+}
+.option-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 20px;
+}

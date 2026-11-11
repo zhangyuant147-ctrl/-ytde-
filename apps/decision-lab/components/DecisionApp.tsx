@@ -123,7 +123,9 @@ export default function DecisionApp({
             </button>
           </div>
           <ol>
-            <li>写下你的难题，列出 2–4 个候选项。</li>
+            <li>
+              写下难题。可以自己列选项，也可以点「帮我想选项」，挑好再开始。
+            </li>
             <li>按当下的真实想法回答卡片，可回头修改。</li>
             <li>查看匹配指数、回答依据和下一步建议。</li>
           </ol>
