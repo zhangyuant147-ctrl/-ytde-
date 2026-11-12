@@ -1,0 +1,100 @@
+.hero-life-link{display:flex;align-items:center;gap:15px;margin-top:14px;color:var(--lime);font-size:9px;line-height:1.8}
+.life-section{padding-top:55px;padding-bottom:85px}
+.life-embedded>.section-topline{padding-top:30px;border-top:1px solid var(--line)}
+.life-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin:45px 0 55px}
+.life-handwritten{display:block;font:italic 23px/1.5 Georgia,serif;color:var(--lime);margin-bottom:17px}
+.life-heading :is(h1,h2){font-size:clamp(35px,4.2vw,62px);font-weight:400;letter-spacing:-2px;line-height:1.4}
+.life-heading :is(h1,h2)>span{color:var(--lime)}
+.life-intro{padding-bottom:8px;max-width:350px}
+.life-intro p{font-size:13px;line-height:2.2;color:var(--muted)}
+.life-intro>span{display:block;font-size:10px;line-height:1.8;color:var(--lime);margin-top:20px}
+.life-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:52px 28px}
+.life-story{min-width:0}
+.life-driving{grid-column:1/-1;display:grid;grid-template-columns:1.6fr 1fr;gap:6%;align-items:center;padding-bottom:36px;border-bottom:1px solid var(--line)}
+.life-photo{position:relative;display:block;width:100%;overflow:hidden;text-align:left;isolation:isolate;background:#22251f;aspect-ratio:1.35}
+.life-photo>img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.life-photo:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#10110c50,transparent 30%,transparent 75%,#10110c55)}
+.life-photo:hover>img,.life-photo:focus-visible>img{transform:scale(1.035)}
+.life-driving .life-photo{aspect-ratio:1.5}
+.life-photo-index{position:absolute;top:20px;left:20px;font-size:7px;line-height:1.8;letter-spacing:1.2px;color:#f6f0e4;z-index:2;text-shadow:0 1px 6px #0009}
+.life-photo-expand{position:absolute;right:15px;bottom:15px;width:32px;height:32px;display:grid;place-items:center;border:1px solid #f6f0e466;border-radius:50%;background:#16191266;color:#fff;z-index:2;transition:background .2s}
+.life-photo:hover .life-photo-expand{background:#161912bb}
+.life-story-copy{padding-top:24px}
+.life-story-copy>.eyebrow{font-size:8px;letter-spacing:1.5px}
+.life-story-copy :is(h2,h3){font-size:clamp(18px,1.65vw,25px);font-weight:400;letter-spacing:-.6px;line-height:1.6;margin:13px 0}
+.life-story-copy>p{font-size:11px;line-height:2.15;color:var(--muted)}
+.life-story-note{display:block;font-size:9px;line-height:1.9;color:var(--lime);margin-top:22px}
+.life-driving .life-story-copy{padding:20px 0}
+.life-driving .life-story-copy :is(h2,h3){font-size:clamp(25px,2.5vw,36px);letter-spacing:-1px;line-height:1.55;margin:22px 0}
+.life-driving .life-story-copy>p{font-size:12px;line-height:2.2}
+.life-driving .life-story-note{margin-top:27px;font-size:9px}
+.life-road-line{display:flex;align-items:center;gap:18px;margin-top:40px;color:var(--lime)}
+.life-road-line>i{width:70px;height:1px;background:var(--lime);opacity:.5}
+.life-ending{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:55px;border-top:1px solid var(--line);padding-top:25px}
+.life-ending>p{font-size:11px;line-height:1.9;color:var(--muted)}
+.life-ending>span,.life-dialog-credit{font-size:8px;line-height:1.8;color:var(--muted)}
+.life-cooking{grid-column:1/-1;display:grid;grid-template-columns:1.6fr 1fr;gap:6%;align-items:center;border-top:1px solid var(--line);padding-top:45px}
+.life-cooking-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.life-cooking-photos .life-photo{aspect-ratio:1280/1707}
+.life-cooking-photos figcaption{font-size:9px;line-height:1.9;color:var(--muted);padding-top:12px}
+.life-cooking .life-story-copy{padding:15px 0}
+.life-cooking .life-story-copy :is(h2,h3){font-size:clamp(25px,2.5vw,36px);line-height:1.55;text-wrap:balance;margin:20px 0}
+.life-cooking .life-story-copy>p{font-size:12px;line-height:2.2}
+.about-life-note{display:grid;grid-template-columns:1fr 1.1fr;gap:10%;align-items:center;border-bottom:1px solid var(--line)}
+.about-life-note h2{font-size:clamp(25px,2.7vw,38px);font-weight:400;line-height:1.6;letter-spacing:-1px;margin:20px 0}
+.about-life-note p{font-size:12px;line-height:2.2;color:var(--muted);max-width:390px}
+.about-life-note .text-link{margin-top:22px}
+.about-life-photos{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.about-life-photos button{position:relative;aspect-ratio:1.3;overflow:hidden}
+.about-life-photos img{width:100%;height:100%;object-fit:cover;transition:scale .5s}
+.about-life-photos button:hover img{scale:1.04}
+.about-life-photos span{position:absolute;bottom:10px;left:12px;font-size:10px;letter-spacing:2px;color:#fff;text-shadow:0 1px 6px #000}
+.about-life-photos .about-photo-cooking{grid-column:1/-1;aspect-ratio:2.8}
+.about-photo-cooking img{object-position:center 65%}
+.life-dialog{width:min(1100px,94vw);background:var(--bg)}
+.life-dialog>img{width:100%;height:auto;max-height:65svh;object-fit:contain;background:#11130f}
+.life-dialog-copy{padding:27px 35px}
+.life-dialog-copy h2{font-size:25px;font-weight:400;line-height:1.6;margin:12px 0}
+.life-dialog-copy p{font-size:12px;color:var(--muted);line-height:2;max-width:800px}
+.life-dialog-credit{display:block;margin-top:20px}
+@media(min-width:761px) and (max-width:1100px){.nav{gap:15px}.header{gap:18px}.life-driving{gap:5%;grid-template-columns:1.4fr 1fr}.life-driving .life-story-copy :is(h2,h3){font-size:26px}.life-driving .life-story-copy>p{font-size:11px}.life-grid{column-gap:22px}.life-story-copy :is(h2,h3){font-size:18px}.life-intro p{font-size:12px}}
+@media(max-width:760px){
+ .hero-life-link{font-size:8px;margin-top:7px;gap:8px}
+ .hero-life-link>svg{width:10px}
+ .life-section{padding-top:40px;padding-bottom:50px}
+ .life-embedded>.section-topline{padding-top:25px}
+ .life-heading{display:block;margin:30px 0 32px}
+ .life-handwritten{font-size:21px;margin-bottom:14px}
+ .life-heading :is(h1,h2){font-size:36px;line-height:1.45;letter-spacing:-1.5px}
+ .life-intro{margin-top:25px;max-width:none;padding:0}
+ .life-intro p{font-size:12px;line-height:2}
+ .life-intro>span{font-size:9px;margin-top:14px}
+ .life-grid{grid-template-columns:1fr;gap:36px}
+ .life-driving{grid-column:auto;display:block;padding-bottom:30px}
+ .life-photo,.life-driving .life-photo{aspect-ratio:1.5}
+ .life-photo-index{font-size:6px;top:14px;left:14px;letter-spacing:1px}
+ .life-photo-expand{width:29px;height:29px;right:12px;bottom:12px}
+ .life-story-copy,.life-driving .life-story-copy{padding:22px 0 0}
+ .life-story-copy>.eyebrow{font-size:7px}
+ .life-story-copy :is(h2,h3),.life-driving .life-story-copy :is(h2,h3){font-size:23px;line-height:1.6;letter-spacing:-.7px;margin:12px 0}
+ .life-story-copy>p,.life-driving .life-story-copy>p{font-size:12px;line-height:2.1}
+ .life-story-note,.life-driving .life-story-note{font-size:10px;margin-top:17px}
+ .life-road-line{margin-top:23px}
+ .life-ending{align-items:flex-start;flex-direction:column;gap:14px;margin-top:35px;padding-top:22px}
+ .life-ending>p{font-size:11px}
+ .life-ending>span{font-size:8px}
+ .life-cooking{grid-column:auto;grid-template-columns:1fr;gap:25px;padding-top:30px}
+ .life-cooking-photos{gap:12px}
+ .life-cooking-photos figcaption{font-size:8px;padding-top:9px}
+ .life-cooking .life-story-copy{padding:0}
+ .life-cooking .life-story-copy :is(h2,h3){font-size:25px;margin:12px 0;text-wrap:initial}
+ .about-life-note{grid-template-columns:1fr;gap:30px}
+ .about-life-note h2{font-size:27px;margin:18px 0}
+ .about-life-note p{font-size:12px;max-width:none}
+ .about-life-note .text-link{margin-top:18px}
+ .about-life-photos{gap:12px}
+ .life-dialog-copy{padding:24px}
+ .life-dialog-copy h2{font-size:22px}
+ .life-dialog-copy p{font-size:12px}
+ .life-dialog-copy>.eyebrow{font-size:7px}
+}

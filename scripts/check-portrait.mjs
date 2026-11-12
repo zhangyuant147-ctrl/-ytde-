@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import ts from 'typescript';
+const js=ts.transpileModule(fs.readFileSync(new URL('../site/src/portrait-motion.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext}}).outputText;
+const {selectPortraitPose,portraitPointer}=await import('data:text/javascript;base64,'+Buffer.from(js).toString('base64'));
+for(const previous of ['neutral','left','right','up','down']) assert.equal(selectPortraitPose(0,0,previous),'neutral','Centre must always return to neutral');
+for(const [x,y,pose] of [[-1,0,'left'],[1,0,'right'],[0,-1,'up'],[0,1,'down']]) assert.equal(selectPortraitPose(x,y),pose);
+assert.equal(selectPortraitPose(.55,.56,'right'),'right','Small diagonal movement must not flicker between axes');
+assert.equal(selectPortraitPose(.55,.8,'right'),'down','A deliberate axis change must still work');
+assert.equal(selectPortraitPose(.23,0,'neutral'),'neutral','Keep the centre dead zone');
+assert.equal(selectPortraitPose(.23,0,'right'),'right','Keep an established direction near the threshold');
+for(let x=-1;x<=1;x+=.1) for(let y=-1;y<=1;y+=.1) assert.ok(['neutral','left','right','up','down'].includes(selectPortraitPose(x,y)),'Only four directions plus neutral are allowed');
+const box={left:100,top:200,width:400,height:500};
+assert.deepEqual(portraitPointer(300,375,box),{x:0,y:0});
+assert.deepEqual(portraitPointer(9999,-9999,box),{x:1,y:-1});
+console.log('Portrait checks passed: centre reset, four directions, hysteresis, pointer bounds.');

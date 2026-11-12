@@ -5,95 +5,74 @@ import left from "./expressions/left.webp";
 import right from "./expressions/right.webp";
 import up from "./expressions/up.webp";
 import down from "./expressions/down.webp";
-import happy from "./expressions/happy.webp";
 
-const poses: { name: PortraitPose; src: string }[] = [
-  {name: "neutral", src: neutral}, {name: "left", src: left}, {name: "right", src: right},
-  {name: "up", src: up}, {name: "down", src: down}, {name: "happy", src: happy},
+const poses: {name: PortraitPose; src: string}[] = [
+  {name:"neutral",src:neutral},{name:"left",src:left},{name:"right",src:right},
+  {name:"up",src:up},{name:"down",src:down},
 ];
 
-export default function InteractivePortrait({enabled = true, greeting = 0}: {enabled?: boolean; greeting?: number}) {
-  const root = useRef<HTMLButtonElement>(null);
-  const [pose, setPose] = useState<PortraitPose>("neutral");
+export default function InteractivePortrait({enabled = true}: {enabled?: boolean}) {
+  const root = useRef<HTMLDivElement>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const poseRef = useRef<PortraitPose>("neutral");
-  const holdUntil = useRef(0);
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
   useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const query = matchMedia("(prefers-reduced-motion: reduce)");
     const change = () => setReducedMotion(query.matches);
-    change(); query.addEventListener("change", change);
-    return () => query.removeEventListener("change", change);
-  }, []);
-
+    change(); query.addEventListener("change",change);
+    return () => query.removeEventListener("change",change);
+  },[]);
   useEffect(() => {
     const el = root.current;
-    if (!el) return;
-    const stage = el.closest<HTMLElement>("[data-portrait-stage]");
-    if (!stage) return;
-    let raf = 0;
-    let lastChange = 0;
-    let currentX = 0, currentY = 0, targetX = 0, targetY = 0;
-    let nearFace = false;
-    let inside = false;
-    const active = enabled && !reducedMotion;
-    const displayPose = (next: PortraitPose) => {
-      if (poseRef.current !== next) { poseRef.current = next; setPose(next); }
-    };
-    const tick = () => {
-      raf = 0;
-      currentX += (targetX - currentX) * 0.18;
-      currentY += (targetY - currentY) * 0.18;
-      el.style.setProperty("--head-x", `${currentX * 2.8}deg`);
-      el.style.setProperty("--head-y", `${-currentY * 2.2}deg`);
-      const now = performance.now();
-      if (now >= holdUntil.current && now - lastChange > 110) {
-        const next = inside ? selectPortraitPose(currentX, currentY, nearFace) : "neutral";
-        if (next !== poseRef.current) { displayPose(next); lastChange = now; }
+    const stage = el?.closest<HTMLElement>("[data-portrait-stage]");
+    if (!el || !stage) return;
+    const layers = Array.from(el.querySelectorAll<HTMLImageElement>(".portrait-pose"));
+    let frame=0, last=0, x=0, y=0, tx=0, ty=0, inside=false;
+    let pose: PortraitPose="neutral";
+    const weights=poses.map(p=>p.name==="neutral" ? 1 : 0);
+    const active=enabled && !reducedMotion;
+    const tick=(time:number) => {
+      frame=0;
+      const dt=last ? Math.min(time-last,40) : 16.67; last=time;
+      const ease=1-Math.exp(-dt/135);
+      x+=(tx-x)*ease; y+=(ty-y)*ease;
+      pose=inside ? selectPortraitPose(x,y,pose) : "neutral";
+      el.dataset.pose=pose;
+      el.style.setProperty("--head-x",`${(x*1.4).toFixed(3)}deg`);
+      el.style.setProperty("--head-y",`${(-y*1.1).toFixed(3)}deg`);
+      let unsettled=Math.abs(tx-x)+Math.abs(ty-y)>.001;
+      for(let i=0;i<layers.length;i++) {
+        const target=poses[i].name===pose ? 1 : 0;
+        weights[i]+=(target-weights[i])*(1-Math.exp(-dt/95));
+        if(Math.abs(target-weights[i])<.001) weights[i]=target;
+        else unsettled=true;
+        layers[i].style.opacity=String(weights[i]);
       }
-      if (Math.abs(targetX-currentX) + Math.abs(targetY-currentY) > 0.003) raf = requestAnimationFrame(tick);
+      if(unsettled) frame=requestAnimationFrame(tick);
     };
-    const schedule = () => { if (!raf) raf = requestAnimationFrame(tick); };
-    const move = (event: PointerEvent) => {
-      if (!active || event.pointerType === "touch") return;
-      const box = el.getBoundingClientRect();
-      if (!box.width || !box.height) return;
-      const p = portraitPointer(event.clientX,event.clientY,box);
-      targetX = p.x; targetY = p.y; nearFace = p.nearFace; inside = true; schedule();
+    const schedule=()=>{if(!frame) {last=0;frame=requestAnimationFrame(tick);}};
+    const move=(event:PointerEvent)=>{
+      if(!active || event.pointerType==="touch") return;
+      const box=el.getBoundingClientRect();
+      if(!box.width || !box.height) return;
+      const p=portraitPointer(event.clientX,event.clientY,box);
+      tx=p.x;ty=p.y;inside=true;schedule();
     };
-    const reset = () => {
-      inside = false; nearFace = false; targetX = targetY = 0; holdUntil.current = 0;
-      if (timer.current) clearTimeout(timer.current);
-      displayPose("neutral"); schedule();
+    const reset=()=>{inside=false;tx=ty=0;schedule();};
+    el.dataset.pose="neutral";
+    el.style.setProperty("--head-x","0deg");el.style.setProperty("--head-y","0deg");
+    layers.forEach((layer,i)=>{layer.style.opacity=String(weights[i]);});
+    if(active) {
+      stage.addEventListener("pointermove",move,{passive:true});
+      stage.addEventListener("pointerleave",reset);stage.addEventListener("pointercancel",reset);
+      window.addEventListener("blur",reset);window.addEventListener("scroll",reset,{passive:true});
+    }
+    return ()=>{
+      cancelAnimationFrame(frame);stage.removeEventListener("pointermove",move);
+      stage.removeEventListener("pointerleave",reset);stage.removeEventListener("pointercancel",reset);
+      window.removeEventListener("blur",reset);window.removeEventListener("scroll",reset);
     };
-    reset();
-    stage.addEventListener("pointermove",move,{passive:true});
-    stage.addEventListener("pointerleave",reset);
-    stage.addEventListener("pointercancel",reset);
-    window.addEventListener("blur",reset);
-    return () => {
-      stage.removeEventListener("pointermove",move);
-      stage.removeEventListener("pointerleave",reset);
-      stage.removeEventListener("pointercancel",reset);
-      window.removeEventListener("blur",reset);
-      cancelAnimationFrame(raf);
-      if (timer.current) clearTimeout(timer.current);
-    };
-  }, [enabled,reducedMotion]);
-
-  const greet = () => {
-    if (!enabled || reducedMotion) return;
-    if (timer.current) clearTimeout(timer.current);
-    poseRef.current = "happy"; setPose("happy");
-    holdUntil.current = performance.now() + 1100;
-    timer.current = setTimeout(() => {holdUntil.current = 0; poseRef.current = "neutral"; setPose("neutral");},1100);
-  };
-
-  useEffect(() => { if (greeting > 0) greet(); }, [greeting]);
-
-  return <button ref={root} type="button" className="interactive-portrait" data-pose={pose} data-motion-enabled={enabled && !reducedMotion} onClick={greet} aria-label="和张元通的黏土形象互动：移动鼠标看他转头，点击收获笑脸">
+  },[enabled,reducedMotion]);
+  return <div ref={root} className="interactive-portrait" role="img" data-pose="neutral" data-motion-enabled={enabled && !reducedMotion} aria-label="张元通的数字分身，随鼠标向上下左右转头，居中时回正">
     <span className="portrait-body" aria-hidden="true"><img src={neutral} alt="" draggable={false}/></span>
-    <span className="portrait-head" aria-hidden="true">{poses.map(p => <img key={p.name} src={p.src} alt="" draggable={false} className={pose === p.name ? "portrait-pose is-active" : "portrait-pose"} fetchPriority={p.name === "neutral" ? "high" : "auto"}/>)}</span>
-  </button>;
+    <span className="portrait-head" aria-hidden="true">{poses.map(p=><img key={p.name} src={p.src} alt="" draggable={false} className="portrait-pose" style={{opacity:p.name==="neutral" ? 1 : 0}} fetchPriority={p.name==="neutral" ? "high" : "auto"}/>)}</span>
+  </div>;
 }

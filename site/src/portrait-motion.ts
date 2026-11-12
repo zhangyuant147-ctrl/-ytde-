@@ -1,18 +1,20 @@
-export type PortraitPose = "neutral" | "left" | "right" | "up" | "down" | "happy";
+export type PortraitPose = "neutral" | "left" | "right" | "up" | "down";
 
-export function selectPortraitPose(x: number, y: number, nearFace: boolean): PortraitPose {
-  if (nearFace) return "happy";
-  if (Math.max(Math.abs(x), Math.abs(y)) < 0.28) return "neutral";
-  if (Math.abs(y) > Math.abs(x)) return y < 0 ? "up" : "down";
-  return x < 0 ? "left" : "right";
+/** A small dead zone and axis hysteresis prevent flickering near the centre/diagonals. */
+export function selectPortraitPose(x: number, y: number, previous: PortraitPose = "neutral"): PortraitPose {
+  const ax = Math.abs(x), ay = Math.abs(y);
+  const threshold = previous === "neutral" ? .3 : .19;
+  if (Math.max(ax, ay) < threshold) return "neutral";
+  const horizontal = previous === "left" || previous === "right";
+  const vertical = previous === "up" || previous === "down";
+  if (horizontal && ax > .19 && ay < ax * 1.22) return x < 0 ? "left" : "right";
+  if (vertical && ay > .19 && ax < ay * 1.22) return y < 0 ? "up" : "down";
+  return ay > ax ? (y < 0 ? "up" : "down") : (x < 0 ? "left" : "right");
 }
 
 export function portraitPointer(clientX: number, clientY: number, box: {left: number; top: number; width: number; height: number}) {
-  const offsetX = clientX - (box.left + box.width * 0.5);
-  const offsetY = clientY - (box.top + box.height * 0.35);
   return {
-    x: Math.max(-1, Math.min(1, offsetX / (box.width * 0.42))),
-    y: Math.max(-1, Math.min(1, offsetY / (box.height * 0.3))),
-    nearFace: Math.abs(offsetX) < box.width * 0.18 && Math.abs(offsetY) < box.height * 0.14,
+    x: Math.max(-1, Math.min(1, (clientX - (box.left + box.width * .5)) / (box.width * .5))),
+    y: Math.max(-1, Math.min(1, (clientY - (box.top + box.height * .35)) / (box.height * .4))),
   };
 }
