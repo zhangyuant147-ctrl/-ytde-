@@ -200,3 +200,19 @@
  .hero-flight .hero-contact-block{bottom:113px}
  .hero-flight .hero-bottom{bottom:25px}
 }
+
+.project-detail .portfolio-launch {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  min-height: 44px;
+  padding: .65rem 1.15rem;
+  margin: .25rem 0 1rem;
+  border-radius: 999px;
+  background: #e9e2ff;
+  color: #221930;
+  font-size: .92rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+.portfolio-launch:hover, .portfolio-launch:focus-visible { background: #fff; }

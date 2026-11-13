@@ -1,0 +1,86 @@
+[
+  {
+    "name": "recognizer-worker.js",
+    "mime": "text/javascript",
+    "parts": [
+      "7d2d0e94f8c8605cedfe6dc6-0.bin"
+    ]
+  },
+  {
+    "name": "transformers.js",
+    "mime": "text/javascript",
+    "parts": [
+      "9fb07aa5de2a2e3e9b6fb732-0.bin"
+    ]
+  },
+  {
+    "name": "simplify.js",
+    "mime": "text/javascript",
+    "parts": [
+      "6ac305b8b237a9c1cc9409e8-0.bin"
+    ]
+  },
+  {
+    "name": "ort-wasm-simd.wasm",
+    "mime": "application/wasm",
+    "parts": [
+      "7e2c5c0a21f3fc6b53603a50-0.bin"
+    ]
+  },
+  {
+    "name": "whisper-base/config.json",
+    "mime": "application/json",
+    "parts": [
+      "b824c17f9534e7d9132ab026-0.bin"
+    ]
+  },
+  {
+    "name": "whisper-base/generation_config.json",
+    "mime": "application/json",
+    "parts": [
+      "dab621b85f565148cedee3ca-0.bin"
+    ]
+  },
+  {
+    "name": "whisper-base/preprocessor_config.json",
+    "mime": "application/json",
+    "parts": [
+      "3e9196ce72ecba825dbaa1f4-0.bin"
+    ]
+  },
+  {
+    "name": "whisper-base/tokenizer.json",
+    "mime": "application/json",
+    "parts": [
+      "e1ca2805b8354df9b85408d6-0.bin"
+    ]
+  },
+  {
+    "name": "whisper-base/tokenizer_config.json",
+    "mime": "application/json",
+    "parts": [
+      "784774c4559adf817bed92d9-0.bin"
+    ]
+  },
+  {
+    "name": "whisper-base/onnx/encoder_model_quantized.onnx",
+    "mime": "application/octet-stream",
+    "parts": [
+      "2a252daabbc6830bea0f2c61-0.bin",
+      "2a252daabbc6830bea0f2c61-1.bin",
+      "2a252daabbc6830bea0f2c61-2.bin"
+    ]
+  },
+  {
+    "name": "whisper-base/onnx/decoder_model_merged_quantized.onnx",
+    "mime": "application/octet-stream",
+    "parts": [
+      "756f625c8fc8490b46f1a371-0.bin",
+      "756f625c8fc8490b46f1a371-1.bin",
+      "756f625c8fc8490b46f1a371-2.bin",
+      "756f625c8fc8490b46f1a371-3.bin",
+      "756f625c8fc8490b46f1a371-4.bin",
+      "756f625c8fc8490b46f1a371-5.bin"
+    ]
+  }
+]
