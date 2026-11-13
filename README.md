@@ -8,7 +8,7 @@
 
 构建会检查 TypeScript，将产物写入 `dist/`，并同步到根目录的 `index.html`、`assets/`、`favicon.svg` 和 `.nojekyll`。使用相对资源路径，支持 GitHub Pages 子路径。
 
-仓库保存网站源码和可直接托管的静态文件。[现有在线网站](https://clay-studio-1109.leaflesscompass1.chatgpt.site) 单独发布。
+[访问个人网站](https://zhangyuant147-ctrl.github.io/-ytde-/)。推送网站源码到 `main` 后，GitHub Actions 会构建并将 `dist/` 发布到 GitHub Pages。
 
 ## 以后如何补充内容
 
